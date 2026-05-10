@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#FBFAF7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#18181B" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Тренировки">
+<title>Тренировки · Скалолазание</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FBFAF7;
+  --surface: #FFFFFF;
+  --surface-2: #F1EFE8;
+  --text: #18181B;
+  --text-2: #57534E;
+  --text-3: #A8A29E;
+  --line: rgba(0,0,0,0.08);
+  --line-2: rgba(0,0,0,0.14);
+  --accent: #C84B1F;
+  --accent-bg: #FAECE7;
+  --done: #1D9E75;
+  --done-bg: #E1F5EE;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #18181B;
+    --surface: #1F1F23;
+    --surface-2: #27272A;
+    --text: #FAFAF9;
+    --text-2: #A8A29E;
+    --text-3: #57534E;
+    --line: rgba(255,255,255,0.1);
+    --line-2: rgba(255,255,255,0.18);
+    --accent: #F0997B;
+    --accent-bg: #2A1610;
+    --done: #5DCAA5;
+    --done-bg: #0F2A20;
+  }
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+  font-size: 15px;
+  min-height: 100vh;
+}
+.mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+.app { max-width: 720px; margin: 0 auto; padding-bottom: env(safe-area-inset-bottom); }
+header {
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 10;
+  border-bottom: 1px solid var(--line);
+  padding-top: env(safe-area-inset-top);
+}
+.top {
+  padding: 12px 16px 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo { width: 36px; height: 22px; flex-shrink: 0; }
+.logo path { stroke: var(--text); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+.logo .peak { stroke: var(--accent); }
+h1 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  flex: 1;
+}
+.progress {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-2);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.tabs-wrap { overflow-x: auto; padding: 0 12px 10px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.tabs-wrap::-webkit-scrollbar { display: none; }
+.tabs { display: flex; gap: 5px; min-width: max-content; }
+.tab {
+  padding: 9px 14px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  transition: all 0.15s;
+}
+.tab:active { transform: scale(0.96); }
+.tab.active {
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+}
+main { padding: 18px 16px 32px; }
+.section-head { margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+.section-label { font-size: 11px; font-weight: 600; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+.section-head h2 { font-size: 26px; font-weight: 700; margin: 0 0 6px; letter-spacing: -0.02em; line-height: 1.15; }
+.section-head .meta { font-size: 13px; color: var(--text-2); margin: 0; }
+.section-head .meta strong { color: var(--text); font-weight: 600; }
+.cards { display: flex; flex-direction: column; gap: 8px; }
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  gap: 12px;
+  cursor: pointer;
+  align-items: center;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: all 0.15s;
+  position: relative;
+}
+.card:active { transform: scale(0.985); background: var(--surface-2); }
+.card.done { background: var(--done-bg); border-color: var(--done); }
+.card.done .anim { opacity: 0.55; }
+.anim {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  background: var(--surface-2);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.card.done .anim { background: transparent; }
+.anim svg { width: 100%; height: 100%; display: block; }
+.body { flex: 1; min-width: 0; }
+.name { font-size: 15px; font-weight: 600; margin: 0 0 2px; line-height: 1.25; letter-spacing: -0.005em; }
+.reps { font-size: 12px; color: var(--accent); font-weight: 600; margin: 0 0 3px; letter-spacing: 0.02em; }
+.card.done .reps { color: var(--done); }
+.tip { font-size: 12px; color: var(--text-2); margin: 0; line-height: 1.4; }
+.chev { color: var(--text-3); font-size: 22px; line-height: 1; padding-left: 2px; font-weight: 300; }
+.check-icon { color: var(--done); width: 22px; height: 22px; flex-shrink: 0; }
+
+/* Detail view */
+.back-btn {
+background: transparent;
+border: none;
+font: inherit;
+font-size: 14px;
+color: var(–text-2);
+padding: 0;
+margin-bottom: 18px;
+cursor: pointer;
+display: inline-flex;
+align-items: center;
+gap: 6px;
+font-weight: 500;
+font-family: inherit;
+letter-spacing: 0.01em;
+}
+.back-btn:active { color: var(–text); }
+.back-btn::before { content: “←”; font-size: 18px; }
+.detail-head {
+display: flex;
+gap: 16px;
+align-items: flex-start;
+margin-bottom: 8px;
+flex-wrap: wrap;
+}
+.anim-big {
+width: 128px;
+height: 128px;
+background: var(–surface-2);
+border-radius: 14px;
+overflow: hidden;
+flex-shrink: 0;
+}
+.anim-big svg { width: 100%; height: 100%; display: block; }
+.detail-info { flex: 1; min-width: 170px; }
+.detail-info h2 { font-size: 22px; font-weight: 700; margin: 0 0 6px; line-height: 1.15; letter-spacing: -0.015em; }
+.detail-info .reps-big { font-size: 14px; color: var(–accent); font-weight: 600; margin: 0 0 10px; letter-spacing: 0.02em; }
+.target { font-size: 13px; color: var(–text-2); margin: 0; line-height: 1.5; }
+.target b { color: var(–text); font-weight: 600; }
+.det-section { margin-top: 22px; }
+.det-section h3 {
+font-size: 11px;
+font-weight: 600;
+margin: 0 0 10px;
+color: var(–text-2);
+letter-spacing: 0.1em;
+text-transform: uppercase;
+}
+ol.steps { margin: 0; padding: 0; list-style: none; counter-reset: step; }
+ol.steps li {
+counter-increment: step;
+position: relative;
+padding: 6px 0 6px 36px;
+font-size: 14px;
+line-height: 1.5;
+color: var(–text);
+border-bottom: 1px solid var(–line);
+}
+ol.steps li:last-child { border-bottom: none; }
+ol.steps li::before {
+content: counter(step, decimal-leading-zero);
+position: absolute;
+left: 0;
+top: 8px;
+font-family: “IBM Plex Mono”, monospace;
+font-size: 11px;
+font-weight: 600;
+color: var(–accent);
+letter-spacing: 0.04em;
+}
+ul.mistakes { margin: 0; padding: 0; list-style: none; }
+ul.mistakes li {
+position: relative;
+padding: 5px 0 5px 22px;
+font-size: 14px;
+line-height: 1.5;
+color: var(–text);
+}
+ul.mistakes li::before {
+content: “”;
+position: absolute;
+left: 4px;
+top: 13px;
+width: 8px;
+height: 1.5px;
+background: var(–accent);
+}
+.mark-btn {
+width: 100%;
+margin-top: 26px;
+padding: 14px 16px;
+background: var(–text);
+color: var(–bg);
+border: none;
+border-radius: 12px;
+font: inherit;
+font-size: 14px;
+font-weight: 600;
+letter-spacing: 0.03em;
+text-transform: uppercase;
+cursor: pointer;
+-webkit-appearance: none;
+transition: all 0.15s;
+font-family: inherit;
+}
+.mark-btn:active { transform: scale(0.98); }
+.mark-btn.done {
+background: var(–done-bg);
+color: var(–done);
+}
+
+/* Exercise SVG animations */
+.ex { stroke: var(–text); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+.ex .filled { fill: var(–text); stroke: none; }
+.ex .obj { fill: var(–accent); stroke: none; }
+.ex .obj-s { stroke: var(–accent); fill: none; }
+.ex .band { stroke: #7F77DD; stroke-dasharray: 3 2; stroke-width: 1.6; fill: none; }
+.ex .floor { stroke: var(–text-3); stroke-width: 1.4; }
+
+@keyframes pulse-fade { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
+@keyframes row { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(-32deg); } }
+@keyframes curl { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(-65deg); } }
+@keyframes press-up { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes swing { 0%,100% { transform: rotate(-55deg); } 50% { transform: rotate(50deg); } }
+@keyframes squat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(7px); } }
+@keyframes ankle-rot { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes finger-open { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(-22deg); } }
+@keyframes overhead-arc { 0%,100% { transform: rotate(-30deg); } 50% { transform: rotate(115deg); } }
+@keyframes twist { 0%,100% { transform: rotate(-22deg); } 50% { transform: rotate(22deg); } }
+@keyframes calf-up { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@keyframes knee-fwd { 0%,100% { transform: translateX(0); } 50% { transform: translateX(7px); } }
+@keyframes wrist-flex { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(-30deg); } }
+@keyframes pinch { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(0.65); } }
+@keyframes leg-raise { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(-32deg); } }
+@keyframes side-step { 0%,100% { transform: translateX(0); } 25% { transform: translateX(9px); } 75% { transform: translateX(-9px); } }
+@keyframes nail-bend { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(-22deg); } }
+@keyframes hip-hinge { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(-30deg); } }
+@keyframes vup { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(0.55); } }
+@keyframes spread-1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-3px,1px); } }
+@keyframes spread-2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-2px,-1px); } }
+@keyframes spread-3 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(0,-2px); } }
+@keyframes spread-4 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(2px,-1px); } }
+@keyframes spread-5 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(3px,1px); } }
+@keyframes arch-up { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(0.7); } }
+@keyframes walk-bob { 0%,100% { transform: translate(-4px,0); } 50% { transform: translate(4px,-1px); } }
+@keyframes ext-rot { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(-40deg); } }
+@keyframes pull-apart { 0%,100% { transform: scaleX(1); } 50% { transform: scaleX(1.4); } }
+@keyframes pushup { 0%,100% { transform: translateY(0); } 50% { transform: translateY(3px); } }
+@keyframes plank-hold { 0%,100% { opacity: 1; } 50% { opacity: 0.7; } }
+@keyframes face-pull { 0%,100% { transform: translateX(0); } 50% { transform: translateX(-6px); } }
+@keyframes massage { 0%,100% { transform: translateX(-3px); } 50% { transform: translateX(3px); } }
+@keyframes toe-press { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+@keyframes sleeper { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(35deg); } }
+@keyframes lat-stretch { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(-10deg); } }
+@keyframes lean-fwd { 0%,100% { transform: translateX(0); } 50% { transform: translateX(3px); } }
+@keyframes hip-push-fwd { 0%,100% { transform: translateX(0); } 50% { transform: translateX(-4px); } }
+@keyframes settle-down { 0%,100% { transform: translateY(0); } 50% { transform: translateY(2px); } }
+@keyframes hand-up { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@keyframes bd-1 { 0%,40% { opacity: 1; } 50%,100% { opacity: 0.3; } }
+@keyframes bd-2 { 0%,40% { opacity: 0.3; } 50%,100% { opacity: 1; } }
+@keyframes hold-banana { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+</style>
+
+</head>
+<body>
+<div class="app">
+<header>
+<div class="top">
+<svg class="logo" viewBox="0 0 40 24"><path d="M 1 22 L 8 12 L 13 16 L 19 6"/><path d="M 19 6 L 26 18 L 33 10 L 39 22" class="peak"/></svg>
+<h1>Тренировки</h1>
+<span class="progress" id="prog"></span>
+</div>
+<div class="tabs-wrap"><div class="tabs" id="tabs" role="tablist"></div></div>
+</header>
+<main id="main"></main>
+</div>
+<script>
+const SVG = {
+toeSpread: '<svg viewBox="0 0 60 60" class="ex"><ellipse cx="30" cy="44" rx="13" ry="7"/><circle cx="21" cy="29" r="2.8" class="filled" style="animation:spread-1 1.6s ease-in-out infinite"/><circle cx="26" cy="25" r="2.8" class="filled" style="animation:spread-2 1.6s ease-in-out infinite"/><circle cx="31" cy="23" r="2.8" class="filled" style="animation:spread-3 1.6s ease-in-out infinite"/><circle cx="36" cy="25" r="2.8" class="filled" style="animation:spread-4 1.6s ease-in-out infinite"/><circle cx="41" cy="29" r="2.8" class="filled" style="animation:spread-5 1.6s ease-in-out infinite"/></svg>',
+shortFoot: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="50" x2="54" y2="50" class="floor"/><g style="transform-origin:30px 50px;animation:arch-up 1.4s ease-in-out infinite"><path d="M 12 50 Q 30 35 48 50"/><circle cx="48" cy="50" r="2.5" class="filled"/><circle cx="12" cy="50" r="2.5" class="filled"/></g></svg>',
+ankleCAR: '<svg viewBox="0 0 60 60" class="ex"><line x1="30" y1="6" x2="30" y2="34"/><g style="transform-origin:30px 34px;animation:ankle-rot 2.4s linear infinite"><line x1="30" y1="34" x2="44" y2="40"/><circle cx="44" cy="40" r="2.5" class="filled"/></g><circle cx="30" cy="34" r="2" class="filled"/></svg>',
+lateralBand: '<svg viewBox="0 0 60 60" class="ex"><g style="transform-origin:30px 30px;animation:side-step 1.8s ease-in-out infinite"><circle cx="30" cy="14" r="4" class="filled"/><line x1="30" y1="18" x2="30" y2="32"/><line x1="30" y1="32" x2="22" y2="48"/><line x1="30" y1="32" x2="38" y2="48"/><line x1="22" y1="48" x2="38" y2="48" class="band"/></g><line x1="6" y1="52" x2="54" y2="52" class="floor"/></svg>',
+kneeOverToe: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="50" x2="54" y2="50" class="floor"/><line x1="14" y1="50" x2="14" y2="14"/><circle cx="14" cy="10" r="3.5" class="filled"/><g style="transform-origin:30px 50px;animation:knee-fwd 2s ease-in-out infinite"><line x1="30" y1="50" x2="38" y2="32"/><line x1="38" y1="32" x2="46" y2="50"/><circle cx="46" cy="50" r="2" class="filled"/></g><path d="M 8 48 Q 28 48 44 48" class="band"/></svg>',
+shoulderPass: '<svg viewBox="0 0 60 60" class="ex"><circle cx="30" cy="14" r="4" class="filled"/><line x1="30" y1="18" x2="30" y2="40"/><line x1="30" y1="40" x2="24" y2="54"/><line x1="30" y1="40" x2="36" y2="54"/><g style="transform-origin:30px 22px;animation:overhead-arc 2.2s ease-in-out infinite"><line x1="14" y1="22" x2="46" y2="22" class="band"/><circle cx="14" cy="22" r="2" class="filled"/><circle cx="46" cy="22" r="2" class="filled"/></g></svg>',
+plantarFascia: '<svg viewBox="0 0 60 60" class="ex"><line x1="50" y1="6" x2="50" y2="54" class="floor"/><line x1="6" y1="50" x2="54" y2="50" class="floor"/><g style="animation:lean-fwd 2s ease-in-out infinite"><circle cx="22" cy="14" r="3" class="filled"/><line x1="22" y1="17" x2="22" y2="34"/><line x1="22" y1="34" x2="14" y2="50"/><line x1="22" y1="34" x2="40" y2="50"/><line x1="40" y1="50" x2="46" y2="42"/><line x1="46" y1="42" x2="46" y2="38"/></g></svg>',
+calfStretch: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="52" x2="54" y2="52" class="floor"/><g style="animation:hip-push-fwd 2s ease-in-out infinite"><circle cx="34" cy="14" r="3" class="filled"/><line x1="34" y1="17" x2="32" y2="32"/><line x1="32" y1="32" x2="20" y2="50"/><line x1="20" y1="50" x2="14" y2="52"/><line x1="32" y1="32" x2="46" y2="50"/><line x1="46" y1="50" x2="50" y2="52"/></g></svg>',
+soleusStretch: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="52" x2="54" y2="52" class="floor"/><g style="animation:settle-down 2s ease-in-out infinite"><circle cx="32" cy="16" r="3" class="filled"/><line x1="32" y1="19" x2="30" y2="30"/><line x1="30" y1="30" x2="22" y2="42"/><line x1="22" y1="42" x2="20" y2="52"/><line x1="30" y1="30" x2="42" y2="44"/><line x1="42" y1="44" x2="44" y2="52"/></g></svg>',
+kneeWall: '<svg viewBox="0 0 60 60" class="ex"><line x1="50" y1="6" x2="50" y2="54" class="floor"/><line x1="6" y1="50" x2="54" y2="50" class="floor"/><g style="transform-origin:24px 50px;animation:knee-fwd 1.8s ease-in-out infinite"><line x1="24" y1="50" x2="38" y2="36"/><line x1="38" y1="36" x2="46" y2="50"/></g><line x1="24" y1="50" x2="44" y2="50"/></svg>',
+sleeper: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="48" x2="54" y2="48" class="floor"/><circle cx="14" cy="36" r="3.5" class="filled"/><line x1="17" y1="36" x2="46" y2="36"/><line x1="22" y1="36" x2="22" y2="22"/><g style="transform-origin:22px 22px;animation:sleeper 2s ease-in-out infinite"><line x1="22" y1="22" x2="34" y2="22"/></g></svg>',
+towelBack: '<svg viewBox="0 0 60 60" class="ex"><circle cx="30" cy="14" r="3.5" class="filled"/><line x1="30" y1="18" x2="30" y2="42"/><line x1="30" y1="42" x2="24" y2="54"/><line x1="30" y1="42" x2="36" y2="54"/><line x1="30" y1="22" x2="38" y2="14"/><g style="animation:hand-up 1.8s ease-in-out infinite"><line x1="30" y1="36" x2="22" y2="44"/></g><line x1="38" y1="14" x2="22" y2="44" class="band"/></svg>',
+doorwayPec: '<svg viewBox="0 0 60 60" class="ex"><line x1="46" y1="6" x2="46" y2="54" class="floor"/><g style="animation:lean-fwd 2s ease-in-out infinite"><circle cx="26" cy="18" r="3.5" class="filled"/><line x1="26" y1="22" x2="26" y2="44"/><line x1="26" y1="44" x2="22" y2="54"/><line x1="26" y1="44" x2="30" y2="54"/><line x1="26" y1="28" x2="44" y2="20"/></g></svg>',
+latStretch: '<svg viewBox="0 0 60 60" class="ex"><line x1="48" y1="6" x2="48" y2="54" class="floor"/><line x1="6" y1="52" x2="54" y2="52" class="floor"/><g style="transform-origin:30px 50px;animation:lat-stretch 2s ease-in-out infinite"><circle cx="30" cy="14" r="3.5" class="filled"/><line x1="30" y1="17" x2="32" y2="36"/><line x1="32" y1="36" x2="28" y2="50"/><line x1="32" y1="36" x2="36" y2="50"/><line x1="30" y1="20" x2="44" y2="10"/></g></svg>',
+kbRow: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="52" x2="54" y2="52" class="floor"/><circle cx="14" cy="22" r="3.5" class="filled"/><line x1="17" y1="22" x2="44" y2="28"/><line x1="44" y1="28" x2="44" y2="52"/><g style="transform-origin:38px 30px;animation:row 1.6s ease-in-out infinite"><line x1="38" y1="30" x2="38" y2="48"/><circle cx="38" cy="50" r="4" class="obj"/></g></svg>',
+bicepCurl: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="54" x2="54" y2="54" class="floor"/><circle cx="30" cy="12" r="3.5" class="filled"/><line x1="30" y1="15" x2="30" y2="38"/><line x1="30" y1="38" x2="24" y2="54"/><line x1="30" y1="38" x2="36" y2="54"/><g style="transform-origin:30px 18px;animation:curl 1.4s ease-in-out infinite"><line x1="30" y1="18" x2="30" y2="36"/><circle cx="30" cy="38" r="4" class="obj"/></g></svg>',
+bandHighPull: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="54" x2="54" y2="54" class="floor"/><circle cx="30" cy="22" r="3.5" class="filled"/><line x1="30" y1="25" x2="30" y2="42"/><line x1="30" y1="42" x2="24" y2="54"/><line x1="30" y1="42" x2="36" y2="54"/><line x1="14" y1="6" x2="46" y2="6" class="floor"/><g style="transform-origin:30px 28px;animation:row 1.6s ease-in-out infinite"><line x1="30" y1="28" x2="20" y2="14"/><line x1="30" y1="28" x2="40" y2="14"/></g><line x1="20" y1="14" x2="20" y2="6" class="band"/><line x1="40" y1="14" x2="40" y2="6" class="band"/></svg>',
+pinchGrip: '<svg viewBox="0 0 60 60" class="ex"><rect x="24" y="20" width="12" height="20" class="obj"/><g style="transform-origin:30px 30px;animation:pinch 1.4s ease-in-out infinite"><line x1="20" y1="22" x2="24" y2="26"/><line x1="40" y1="22" x2="36" y2="26"/><line x1="20" y1="22" x2="14" y2="20"/><line x1="40" y1="22" x2="46" y2="20"/></g></svg>',
+fingerExt: '<svg viewBox="0 0 60 60" class="ex"><circle cx="30" cy="44" r="8" class="filled"/><g style="transform-origin:30px 38px;animation:finger-open 1.5s ease-in-out infinite"><line x1="22" y1="38" x2="20" y2="20"/><line x1="27" y1="36" x2="26" y2="14"/><line x1="33" y1="36" x2="34" y2="14"/><line x1="38" y1="38" x2="40" y2="20"/></g><ellipse cx="30" cy="22" rx="14" ry="3" class="band"/></svg>',
+hollowBody: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="48" x2="54" y2="48" class="floor"/><g style="animation:hold-banana 1.8s ease-in-out infinite"><path d="M 10 38 Q 30 26 50 38"/><circle cx="50" cy="38" r="3" class="filled"/><line x1="10" y1="38" x2="6" y2="32"/></g></svg>',
+floorPress: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="48" x2="54" y2="48" class="floor"/><line x1="10" y1="42" x2="50" y2="42"/><circle cx="50" cy="38" r="3.5" class="filled"/><g style="transform-origin:32px 42px;animation:press-up 1.4s ease-in-out infinite"><line x1="32" y1="42" x2="32" y2="26"/><circle cx="32" cy="22" r="4" class="obj"/></g></svg>',
+kbPress: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="54" x2="54" y2="54" class="floor"/><circle cx="30" cy="22" r="3.5" class="filled"/><line x1="30" y1="25" x2="30" y2="44"/><line x1="30" y1="44" x2="24" y2="54"/><line x1="30" y1="44" x2="36" y2="54"/><g style="animation:press-up 1.4s ease-in-out infinite"><line x1="30" y1="26" x2="30" y2="14"/><circle cx="30" cy="10" r="4" class="obj"/></g></svg>',
+facePull: '<svg viewBox="0 0 60 60" class="ex"><line x1="48" y1="6" x2="48" y2="54" class="floor"/><line x1="6" y1="54" x2="54" y2="54" class="floor"/><circle cx="22" cy="22" r="3.5" class="filled"/><line x1="22" y1="25" x2="22" y2="42"/><g style="transform-origin:22px 22px;animation:face-pull 1.4s ease-in-out infinite"><line x1="22" y1="22" x2="40" y2="16"/><line x1="22" y1="22" x2="40" y2="28"/></g><line x1="40" y1="16" x2="48" y2="14" class="band"/><line x1="40" y1="28" x2="48" y2="30" class="band"/></svg>',
+pullApart: '<svg viewBox="0 0 60 60" class="ex"><circle cx="30" cy="14" r="3.5" class="filled"/><line x1="30" y1="17" x2="30" y2="42"/><line x1="30" y1="42" x2="24" y2="54"/><line x1="30" y1="42" x2="36" y2="54"/><g style="transform-origin:30px 24px;animation:pull-apart 1.4s ease-in-out infinite"><line x1="30" y1="24" x2="14" y2="24"/><line x1="30" y1="24" x2="46" y2="24"/></g><line x1="14" y1="24" x2="46" y2="24" class="band"/></svg>',
+extRot: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="54" x2="54" y2="54" class="floor"/><circle cx="22" cy="22" r="3.5" class="filled"/><line x1="22" y1="25" x2="22" y2="44"/><line x1="22" y1="32" x2="32" y2="32"/><g style="transform-origin:32px 32px;animation:ext-rot 1.6s ease-in-out infinite"><line x1="32" y1="32" x2="44" y2="32"/></g><line x1="44" y1="32" x2="52" y2="22" class="band"/></svg>',
+pushup: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="50" x2="54" y2="50" class="floor"/><g style="animation:pushup 1.4s ease-in-out infinite"><line x1="14" y1="32" x2="50" y2="32"/><circle cx="14" cy="30" r="3" class="filled"/><line x1="20" y1="32" x2="20" y2="50"/><line x1="40" y1="32" x2="40" y2="50"/><line x1="50" y1="32" x2="50" y2="48"/></g></svg>',
+plank: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="50" x2="54" y2="50" class="floor"/><g style="animation:plank-hold 2s ease-in-out infinite"><line x1="12" y1="32" x2="50" y2="32"/><circle cx="12" cy="30" r="3" class="filled"/><line x1="16" y1="32" x2="16" y2="48"/><line x1="44" y1="32" x2="50" y2="48"/></g></svg>',
+sidePlank: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="50" x2="54" y2="50" class="floor"/><g style="animation:plank-hold 2s ease-in-out infinite"><line x1="14" y1="48" x2="48" y2="20"/><circle cx="48" cy="18" r="3" class="filled"/><line x1="14" y1="48" x2="14" y2="36"/><line x1="14" y1="36" x2="22" y2="34"/></g></svg>',
+vup: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="48" x2="54" y2="48" class="floor"/><g style="transform-origin:30px 48px;animation:vup 1.4s ease-in-out infinite"><line x1="30" y1="44" x2="14" y2="20"/><line x1="30" y1="44" x2="46" y2="20"/><circle cx="14" cy="18" r="2.5" class="filled"/></g></svg>',
+russianTwist: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="50" x2="54" y2="50" class="floor"/><line x1="30" y1="48" x2="22" y2="34"/><line x1="30" y1="48" x2="38" y2="34"/><g style="transform-origin:30px 32px;animation:twist 1.6s ease-in-out infinite"><circle cx="30" cy="20" r="3.5" class="filled"/><line x1="30" y1="23" x2="30" y2="34"/><line x1="20" y1="28" x2="40" y2="28"/><circle cx="40" cy="28" r="3" class="obj"/></g></svg>',
+birdDog: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="48" x2="54" y2="48" class="floor"/><line x1="14" y1="32" x2="46" y2="32"/><circle cx="14" cy="30" r="3" class="filled"/><g style="animation:bd-1 2.4s ease-in-out infinite"><line x1="18" y1="32" x2="8" y2="20"/></g><g style="animation:bd-2 2.4s ease-in-out infinite"><line x1="46" y1="32" x2="56" y2="20"/></g><line x1="22" y1="32" x2="22" y2="46"/><line x1="42" y1="32" x2="42" y2="46"/></svg>',
+tibialis: '<svg viewBox="0 0 60 60" class="ex"><line x1="50" y1="6" x2="50" y2="54" class="floor"/><line x1="6" y1="52" x2="54" y2="52" class="floor"/><line x1="34" y1="14" x2="34" y2="46"/><g style="transform-origin:34px 46px;animation:wrist-flex 1.4s ease-in-out infinite"><line x1="34" y1="46" x2="22" y2="46"/></g></svg>',
+toeWalk: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="52" x2="54" y2="52" class="floor"/><g style="animation:walk-bob 1.2s ease-in-out infinite"><circle cx="30" cy="14" r="3.5" class="filled"/><line x1="30" y1="17" x2="30" y2="34"/><line x1="30" y1="34" x2="22" y2="46"/><line x1="30" y1="34" x2="38" y2="46"/><line x1="22" y1="46" x2="20" y2="50"/><line x1="38" y1="46" x2="40" y2="50"/></g></svg>',
+kbSwing: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="54" x2="54" y2="54" class="floor"/><circle cx="30" cy="14" r="3.5" class="filled"/><line x1="30" y1="17" x2="30" y2="36"/><line x1="30" y1="36" x2="22" y2="54"/><line x1="30" y1="36" x2="38" y2="54"/><g style="transform-origin:30px 26px;animation:swing 1.6s ease-in-out infinite"><line x1="30" y1="26" x2="30" y2="46"/><circle cx="30" cy="48" r="4.5" class="obj"/></g></svg>',
+pendlayRow: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="54" x2="54" y2="54" class="floor"/><circle cx="14" cy="20" r="3.5" class="filled"/><line x1="17" y1="20" x2="42" y2="32"/><line x1="42" y1="32" x2="38" y2="54"/><line x1="42" y1="32" x2="46" y2="54"/><g style="transform-origin:34px 32px;animation:row 1.6s ease-in-out infinite"><line x1="34" y1="32" x2="34" y2="48"/><circle cx="34" cy="50" r="4" class="obj"/></g></svg>',
+renegade: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="50" x2="54" y2="50" class="floor"/><line x1="14" y1="34" x2="50" y2="34"/><circle cx="50" cy="32" r="3" class="filled"/><line x1="46" y1="34" x2="46" y2="50"/><line x1="20" y1="34" x2="20" y2="48"/><g style="transform-origin:30px 38px;animation:row 1.6s ease-in-out infinite"><line x1="30" y1="38" x2="30" y2="48"/><rect x="26" y="44" width="8" height="6" class="obj"/></g></svg>',
+nailBend: '<svg viewBox="0 0 60 60" class="ex"><g style="animation:nail-bend 1.6s ease-in-out infinite;transform-origin:30px 30px"><line x1="14" y1="20" x2="46" y2="40"/><line x1="14" y1="20" x2="20" y2="14"/><line x1="46" y1="40" x2="40" y2="46"/></g><circle cx="14" cy="20" r="4" class="filled"/><circle cx="46" cy="40" r="4" class="filled"/></svg>',
+wristCurl: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="48" x2="54" y2="48" class="floor"/><line x1="14" y1="36" x2="36" y2="36"/><line x1="14" y1="38" x2="14" y2="48"/><g style="transform-origin:36px 36px;animation:wrist-flex 1.2s ease-in-out infinite"><line x1="36" y1="36" x2="44" y2="44"/><circle cx="44" cy="46" r="4" class="obj"/></g></svg>',
+gobletSquat: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="54" x2="54" y2="54" class="floor"/><g style="animation:squat 1.6s ease-in-out infinite"><circle cx="30" cy="14" r="3.5" class="filled"/><line x1="30" y1="17" x2="30" y2="34"/><line x1="30" y1="34" x2="22" y2="48"/><line x1="22" y1="48" x2="22" y2="54"/><line x1="30" y1="34" x2="38" y2="48"/><line x1="38" y1="48" x2="38" y2="54"/><circle cx="30" cy="22" r="4" class="obj"/></g></svg>',
+bulgarian: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="54" x2="54" y2="54" class="floor"/><line x1="40" y1="40" x2="54" y2="40" class="floor"/><g style="animation:squat 1.6s ease-in-out infinite"><circle cx="22" cy="14" r="3.5" class="filled"/><line x1="22" y1="17" x2="22" y2="32"/><line x1="22" y1="32" x2="20" y2="48"/><line x1="20" y1="48" x2="20" y2="54"/><line x1="22" y1="32" x2="42" y2="38"/></g></svg>',
+singleLegRDL: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="54" x2="54" y2="54" class="floor"/><g style="transform-origin:30px 54px;animation:hip-hinge 1.8s ease-in-out infinite"><circle cx="30" cy="14" r="3.5" class="filled"/><line x1="30" y1="17" x2="30" y2="36"/><line x1="30" y1="36" x2="32" y2="54"/><line x1="30" y1="36" x2="42" y2="40"/><circle cx="44" cy="42" r="3" class="obj"/></g></svg>',
+calfRaise: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="54" x2="54" y2="54" class="floor"/><g style="animation:calf-up 1.4s ease-in-out infinite"><circle cx="30" cy="14" r="3.5" class="filled"/><line x1="30" y1="17" x2="30" y2="32"/><line x1="30" y1="32" x2="30" y2="50"/><line x1="30" y1="50" x2="38" y2="50"/></g></svg>',
+soleusRaise: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="54" x2="54" y2="54" class="floor"/><circle cx="30" cy="22" r="3.5" class="filled"/><line x1="30" y1="25" x2="30" y2="38"/><g style="animation:calf-up 1.4s ease-in-out infinite"><line x1="30" y1="38" x2="20" y2="46"/><line x1="30" y1="38" x2="40" y2="46"/><line x1="20" y1="46" x2="20" y2="50"/><line x1="40" y1="46" x2="40" y2="50"/></g></svg>',
+sideLegRaise: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="50" x2="54" y2="50" class="floor"/><line x1="14" y1="42" x2="42" y2="42"/><circle cx="14" cy="40" r="3" class="filled"/><g style="transform-origin:42px 42px;animation:leg-raise 1.6s ease-in-out infinite"><line x1="42" y1="42" x2="56" y2="42"/></g></svg>',
+bigToePress: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="48" x2="54" y2="48" class="floor"/><ellipse cx="30" cy="38" rx="14" ry="7"/><g style="animation:toe-press 1.2s ease-in-out infinite"><circle cx="20" cy="24" r="3.5" class="obj"/></g><circle cx="26" cy="22" r="2.2" class="filled"/><circle cx="32" cy="22" r="2.2" class="filled"/><circle cx="38" cy="22" r="2.2" class="filled"/><circle cx="42" cy="24" r="2.2" class="filled"/></svg>',
+walking: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="52" x2="54" y2="52" class="floor"/><g style="animation:walk-bob 1.2s ease-in-out infinite"><circle cx="30" cy="14" r="3.5" class="filled"/><line x1="30" y1="17" x2="30" y2="34"/><line x1="30" y1="34" x2="22" y2="50"/><line x1="30" y1="34" x2="38" y2="50"/><line x1="30" y1="22" x2="22" y2="32"/><line x1="30" y1="22" x2="38" y2="32"/></g></svg>',
+suitcase: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="54" x2="54" y2="54" class="floor"/><g style="animation:walk-bob 1.4s ease-in-out infinite"><circle cx="30" cy="12" r="3.5" class="filled"/><line x1="30" y1="15" x2="30" y2="34"/><line x1="30" y1="34" x2="22" y2="50"/><line x1="30" y1="34" x2="38" y2="50"/><line x1="30" y1="22" x2="40" y2="22"/><rect x="36" y="22" width="8" height="14" class="obj"/></g></svg>',
+yoga: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="54" x2="54" y2="54" class="floor"/><g style="animation:pulse-fade 2.4s ease-in-out infinite"><circle cx="30" cy="22" r="3.5" class="filled"/><line x1="30" y1="25" x2="30" y2="46"/><line x1="30" y1="46" x2="22" y2="54"/><line x1="30" y1="46" x2="38" y2="54"/><line x1="30" y1="32" x2="14" y2="14"/><line x1="30" y1="32" x2="46" y2="14"/></g></svg>',
+massage: '<svg viewBox="0 0 60 60" class="ex"><line x1="6" y1="54" x2="54" y2="54" class="floor"/><ellipse cx="30" cy="44" rx="18" ry="6"/><g style="animation:massage 1.4s ease-in-out infinite"><circle cx="30" cy="44" r="4" class="obj"/></g></svg>'
+};
+
+const DETAIL = {
+toeSpread: { target: ‘Малые мышцы стопы, межкостные’, steps: [‘Сядь на стул, стопы плоско на полу’,‘Раздвинь пальцы стопы максимально в стороны’,‘Удержи 2 сек, расслабь’,‘Если не получается — сначала тренируй каждый палец отдельно’], mistakes: [‘Поджимать пальцы вместо растопыривания’,‘Напрягать всю стопу или ногу’] },
+shortFoot: { target: ‘Поперечная мышца стопы, абдуктор большого пальца’, steps: [‘Стопа плоско на полу’,‘Подними свод стопы не сжимая пальцы — как-будто вгрызаешься’,‘Большой палец и мизинец остаются на полу’,‘Удержи 5 сек, расслабь’], mistakes: [‘Сжимать пальцы вместо подъёма свода’,‘Поднимать пятку’] },
+ankleCAR: { target: ‘Подвижность голеностопа во всех плоскостях’, steps: [‘Сядь, нога вытянута’,‘Делай максимально большие круги стопой’,‘Только голеностоп двигается, колено и бедро неподвижны’,‘5 кругов в одну сторону, 5 в другую’], mistakes: [‘Маленькая амплитуда’,‘Движение коленом или всей ногой’] },
+lateralBand: { target: ‘Средняя ягодичная, стабилизаторы таза — критично для slab'ов’, steps: [‘Резинку над коленями или на щиколотках’,‘Чуть присядь, корпус слегка вперёд’,‘Ведущая нога делает большой шаг, вторая подтягивается’,‘Резинка всегда в натяжении’,‘15 шагов вправо, 15 влево’], mistakes: [‘Корпус качается из стороны в сторону’,‘Колени сваливаются внутрь’,‘Маленькие шаги — нет натяжения’] },
+kneeOverToe: { target: ‘Дорсифлексия голеностопа, мобилизация таранной кости — для высоких шагов и edging’, steps: [‘Закрепи резинку низко за тяжёлый предмет/анкер’,‘Петля на передней части голеностопа (чуть ниже косточек)’,‘Стань спиной к якорю, резинка тянет голеностоп назад’,‘Сделай выпад, колено идёт вперёд за носок’,‘Пятка не отрывается от пола’,‘15 пульсов + 30 сек удержание в крайней точке’], mistakes: [‘Пятка отрывается’,‘Колено сваливается внутрь’,‘Слабое натяжение резинки’] },
+shoulderPass: { target: ‘Подвижность плечевого сустава, прехаб ротаторов’, steps: [‘Резинка широким хватом перед собой, прямые руки’,‘Медленно подними над головой’,‘Опусти за спину’,‘Верни обратно через голову’,‘Со временем сужай хват’], mistakes: [‘Сгибать руки в локтях’,‘Резкие движения’,‘Слишком тугая резинка с самого начала’] },
+plantarFascia: { target: ‘Подошвенная фасция, икроножная’, steps: [‘Стопа против стены, пятка на полу’,‘Пальцы упёрты в стену’,‘Аккуратно наклонись к стене корпусом’,‘Должно тянуть свод стопы и икру’,‘30 сек, расслабиться’], mistakes: [‘Отрывать пятку от пола’,‘Слишком сильно — это растяжка, не пытка’] },
+calfStretch: { target: ‘Икроножная мышца (gastrocnemius)’, steps: [‘Выпад, задняя нога прямая’,‘Пятка задней ноги прижата к полу’,‘Подавай таз вперёд, чувствуя растяжение’,‘45 сек/ногу’], mistakes: [‘Сгибать заднюю ногу — это уже не gastrocnemius’,‘Пятка отрывается’] },
+soleusStretch: { target: ‘Камбаловидная мышца (soleus) — критична для длинных маршрутов’, steps: [‘Та же позиция выпада, но колено задней ноги слегка согнуто’,‘Пятка прижата к полу’,‘Перенеси вес тела назад на согнутую ногу’,‘Тянет глубоко в нижней части икры’,‘45 сек/ногу’], mistakes: [‘Слишком согнутое колено — теряется растяжение’,‘Пятка отрывается’] },
+kneeWall: { target: ‘Дорсифлексия голеностопа’, steps: [‘Стопа на расстоянии 3-5 см от стены’,‘Колено вперёд за носок к стене’,‘Пятка не отрывается’,‘Если коснулся — отодвинь стопу дальше’,‘30 сек/ногу или 10 пульсов’], mistakes: [‘Колено сваливается внутрь’,‘Стопа разворачивается’] },
+sleeper: { target: ‘Внутренняя ротация плеча, задняя капсула’, steps: [‘Лёжа на боку, рабочее плечо снизу’,‘Согни локоть на 90°, предплечье вверх’,‘Здоровой рукой мягко дави запястье вниз к полу’,‘Натяжение в задней части плеча’,‘45 сек, без боли’], mistakes: [‘Плечо отрывается от пола’,‘Слишком сильно — может травмировать капсулу’] },
+towelBack: { target: ‘Внутренняя ротация плеча, разгибание плеча — прямая работа над сцеплением рук за спиной’, steps: [‘Полотенце в верхней руке, перекинь через плечо’,‘Нижней рукой поймай полотенце за спиной’,‘Тяни верхней рукой вверх — нижняя поднимается выше’,‘30 сек, поменяй руки’,‘Со временем расстояние между руками сокращается’], mistakes: [‘Резкое тянуть вверх — больно’,‘Скручивание корпуса’] },
+doorwayPec: { target: ‘Большая и малая грудные’, steps: [‘Встань в дверной проём, предплечье на косяке’,‘Локоть чуть выше плеча’,‘Шагни вперёд, не разворачивая корпус’,‘30 сек, повтори с локтем НИЖЕ плеча’,‘Разные углы — разные пучки’], mistakes: [‘Разворот корпуса’,‘Прогиб в пояснице’] },
+latStretch: { target: ‘Широчайшая, межрёберные — скрытый виновник в 70% случаев’, steps: [‘Встань боком к стене на расстоянии шага’,‘Дальняя рука вверх и тянется по стене вверх и от себя’,‘Бедро смещается К стене’,‘Должно тянуть от подмышки до бедра’,‘30 сек/сторону’], mistakes: [‘Корпус слишком сильно скручивается’,‘Рука сгибается в локте’] },
+kbRow: { target: ‘Широчайшая, средняя трапеция, бицепс, хват’, steps: [‘Ноги шире плеч, лёгкий присед’,‘Наклон вперёд от бёдер, спина прямая’,‘Опорная рука на колене, гиря в рабочей’,‘Тяга к нижним рёбрам, локоть скользит вдоль корпуса’,‘Медленное опускание, не бросай’], mistakes: [‘Округление поясницы’,‘Тяга бицепсом вместо спины’,‘Раскачка корпуса’] },
+bicepCurl: { target: ‘Бицепс, плечелучевая’, steps: [‘Стоя, гиря в руке хватом снизу’,‘Локти прижаты к корпусу’,‘Сгибай руку только в локте’,‘Пик в верхней точке — пауза 1 сек’], mistakes: [‘Раскачка корпуса’,‘Локти уходят вперёд’,‘Кистью добиваешь — это уже не бицепс’] },
+bandHighPull: { target: ‘Широчайшая, нижняя трапеция — имитация подтягивания’, steps: [‘Зацепи резинку за высокий якорь (дверной анкер)’,‘Возьми концы, сядь или встань на колени для натяжения’,‘Тяни локти вниз и в стороны, к лопаткам’,‘В нижней точке сведи лопатки’], mistakes: [‘Тяга руками, не лопатками’,‘Слабое натяжение резинки’] },
+pinchGrip: { target: ‘Большой палец, червеобразные — хват зацепов и pinch holds’, steps: [‘Возьми устройство большим пальцем напротив остальных’,‘Сожми максимально, как-будто пытаешься смять’,‘Удержи 30 сек или столько сколько можешь’,‘Прогрессия: увеличиваешь время’], mistakes: [‘Помощь обычным хватом’,‘Неполный зажим’] },
+fingerExt: { target: ‘Разгибатели пальцев — антагонист сгибателям, обязательно для скалолаза’, steps: [‘Резинку надень на все пальцы (можно обычную канцелярскую)’,‘Раскрывай пальцы против сопротивления’,‘Медленный возврат’,‘15 повторений’,‘Если шкивы пальцев летели раньше — делай каждый день’], mistakes: [‘Слишком тугая резинка с самого начала’,‘Только большой палец работает’] },
+hollowBody: { target: ‘Прямая мышца живота, поперечная — ядро для front lever и компрессий’, steps: [‘Лёжа на спине, поясница прижата к полу’,‘Подними плечи и ноги на 15-20 см’,‘Руки вытянуты за головой или вдоль тела’,‘Удержи 30 сек’], mistakes: [‘Поясница отрывается от пола — травмоопасно’,‘Слишком высоко поднимаешь — теряется работа кора’] },
+floorPress: { target: ‘Грудь, трицепс, переднее плечо’, steps: [‘Лёжа на спине, гиря в руке’,‘Локоть согнут под 45° к корпусу’,‘Жим вверх’,‘Опускай контролируемо до касания полом’], mistakes: [‘Локоть в сторону на 90° — травмоопасно для плеча’,‘Бросать руку’] },
+kbPress: { target: ‘Дельты, трицепс, верх трапеции’, steps: [‘Стоя, гиря в стойке у плеча’,‘Корпус не выгибай, ягодицы и пресс напряжены’,‘Жим вверх, рука выпрямляется над головой’,‘Опусти к плечу контролируемо’], mistakes: [‘Прогиб в пояснице’,‘Жим из-под — не доводишь над головой’] },
+facePull: { target: ‘Задняя дельта, ромбовидные, средняя трапеция — антипозный king’, steps: [‘Резинка на уровне лица (анкер на груди)’,‘Локти высоко, на уровне плеч’,‘Тяни к ушам разводя локти в стороны’,‘В верхней точке — внешняя ротация плеч’], mistakes: [‘Локти опускаются’,‘Тяга прямыми руками’] },
+pullApart: { target: ‘Задняя дельта, ромбовидные’, steps: [‘Резинка хватом на ширине плеч’,‘Прямые руки перед собой на уровне груди’,‘Разводи руки до груди, сводя лопатки’,‘Контролируемый возврат’], mistakes: [‘Сгибать руки’,‘Корпус откидывается назад’] },
+extRot: { target: ‘Подостная, малая круглая (ротаторы плеча) — прехаб номер один’, steps: [‘Локоть прижат к корпусу, согнут 90°’,‘Резинка зацеплена сбоку (на уровне локтя)’,‘Поворот предплечья наружу против сопротивления’,‘Локоть остаётся прижатым’,‘Контролируемый возврат’], mistakes: [‘Локоть отходит от корпуса’,‘Поворот всем корпусом’] },
+pushup: { target: ‘Грудь, трицепс, переднее плечо’, steps: [‘Упор лёжа, тело прямое’,‘Кисти под плечами, пальцы вперёд’,‘Локти под 45° к корпусу’,‘Опускайся до касания грудью’,‘Жим вверх’], mistakes: [‘Провисание поясницы’,‘Локти в стороны на 90°’,‘Голова падает вниз’] },
+plank: { target: ‘Прямая мышца живота, поперечная, разгибатели спины’, steps: [‘Упор на предплечьях, локти под плечами’,‘Тело прямое от пяток до головы’,‘Ягодицы напряжены’,‘Дыхание ровное’,‘60 сек’], mistakes: [‘Провисание таза’,‘Поднятый таз — отдыхаешь’,‘Задержка дыхания’] },
+sidePlank: { target: ‘Косые мышцы живота, средняя ягодичная’, steps: [‘На боку, упор на одно предплечье’,‘Бёдра подняты, тело прямое’,‘Свободная рука вверх или на бедре’,‘45 сек/сторону’], mistakes: [‘Бёдра проваливаются вниз’,‘Скручивание корпуса’] },
+vup: { target: ‘Прямая мышца живота, сгибатели бедра’, steps: [‘Лёжа на спине, руки и ноги вытянуты’,‘Одновременно поднимай верх и низ к V’,‘Касайся рук к стопам или близко’,‘Контролируемый возврат’,‘12 повторений’], mistakes: [‘Использование инерции’,‘Поясница не контролируется’] },
+russianTwist: { target: ‘Косые мышцы живота’, steps: [‘Сидя, ноги согнуты, корпус откинут назад на 45°’,‘Гиря в руках’,‘Поворот корпусом из стороны в сторону’,‘Касание гирей пола (или близко)’], mistakes: [‘Поворот только руками’,‘Спина круглая’] },
+birdDog: { target: ‘Стабилизаторы спины, ягодицы, кор — антиротация’, steps: [‘На четвереньках, спина нейтральна’,‘Вытяни противоположную руку и ногу’,‘Удержи 2 сек, верни’,‘Чередуй стороны’,‘С утяжелителями нагрузка больше’], mistakes: [‘Прогиб поясницы’,‘Заваливание корпуса’] },
+tibialis: { target: ‘Передняя большеберцовая — антагонист икры, профилактика плантарного фасциита’, steps: [‘Стой спиной к стене, пятки на 10-15 см от стены’,‘Прислонись спиной к стене’,‘Поднимай носки вверх максимально’,‘Медленный спуск’], mistakes: [‘Пятки слишком близко к стене’,‘Маленькая амплитуда’] },
+toeWalk: { target: ‘Икры, передняя большеберцовая, стабилизаторы голеностопа’, steps: [‘На носках 30 сек ходьбы’,‘Потом на пятках 30 сек’,‘Не касайся серединой стопы’,‘Усложнение: на одной ноге’], mistakes: [‘Касание стопой полностью’,‘Очень медленно — теряется баланс’] },
+kbSwing: { target: ‘Ягодицы, бицепс бедра, поясница, кор — взрывная сила бёдер’, steps: [‘Стопы шире плеч, гиря между ног’,‘Хип-хайндж — сгиб от бёдер, не спины’,‘Резкий толчок бёдрами вперёд’,‘Гиря по дуге до уровня груди (не выше)’,‘Контроль на спуске обратно между ног’], mistakes: [‘Подъём руками вместо бёдер’,‘Округление поясницы’,‘Гиря выше плеч’] },
+pendlayRow: { target: ‘Широчайшая, средняя трапеция, поясница’, steps: [‘Гиря на полу между ног’,‘Хип-хайндж, обе руки на гирю’,‘Из мёртвой точки — взрывная тяга к низу живота’,‘Полностью опусти на пол перед каждым повтором’], mistakes: [‘Округление спины’,‘Не возвращать гирю на пол’] },
+renegade: { target: ‘Спина, кор (антиротация), плечо’, steps: [‘Упор лёжа на гире (или гирях)’,‘Поочерёдно поднимай гирю к корпусу’,‘Бёдра не поворачиваются’,‘Стопы пошире для устойчивости’], mistakes: [‘Вращение корпуса/таза’,‘Провисание корпуса’] },
+nailBend: { target: ‘Сгибатели предплечья, хват, плечо, грудь’, steps: [‘Гвоздь 150 мм (60d), концы обмотать кожей или плотной тряпкой’,‘Хват: концы гвоздя в кулаках, гвоздь на уровне груди’,‘Kink — резко согнуть гвоздь в первой фазе’,‘Bend — продолжить сгибание до 90°’,‘Crush — домять до U’,‘3-5 попыток’], mistakes: [‘Незащищённые руки — порежешься’,‘Слишком толстый гвоздь с самого начала’,‘Гвоздь не в центре кулака’] },
+wristCurl: { target: ‘Сгибатели запястья и пальцев’, steps: [‘Сидя, предплечье на колене, кисть свисает’,‘Гиря в руке, ладонь вверх’,‘Только кисть сгибается — поднимай гирю’,‘Контролируемое опускание’,‘15 повторений’], mistakes: [‘Движение всей рукой’,‘Маленькая амплитуда’] },
+gobletSquat: { target: ‘Квадрицепс, ягодицы, кор’, steps: [‘Гиря у груди, локти под гирей’,‘Стопы шире плеч, носки чуть наружу’,‘Присед глубокий, колени по линии носков’,‘Подъём через пятки’], mistakes: [‘Колени внутрь’,‘Округление поясницы’,‘Пятки отрываются’] },
+bulgarian: { target: ‘Квадрицепс, ягодицы, стабилизаторы’, steps: [‘Задняя нога на стуле/тумбе’,‘Передняя нога на расстоянии большого шага’,‘Опускайся вниз, корпус слегка вперёд’,‘Подъём через пятку передней ноги’,‘Гиря в руках для нагрузки’], mistakes: [‘Корпус слишком прямой — нагрузка только на квад’,‘Передняя стопа слишком близко — перегруз колена’] },
+singleLegRDL: { target: ‘Бицепс бедра, ягодицы, стабилизация всего тела’, steps: [‘Стоя на одной ноге, гиря в противоположной руке’,‘Опорная нога слегка согнута’,‘Хип-хайндж — наклоняйся вперёд, свободная нога идёт назад’,‘Тело образует прямую от головы до пятки задней ноги’,‘Возврат через бёдра’], mistakes: [‘Скручивание таза — таз должен быть параллелен полу’,‘Округление спины’] },
+calfRaise: { target: ‘Икроножная мышца’, steps: [‘Стоя на одной ноге на ступеньке/толстой книге’,‘Гиря в руке для нагрузки’,‘Подъём максимально вверх’,‘Эксцентрик 3 секунды на спуске’,‘Опускайся ниже уровня платформы для полной амплитуды’], mistakes: [‘Маленькая амплитуда’,‘Быстрое опускание’] },
+soleusRaise: { target: ‘Камбаловидная — критична для длинных маршрутов и восстановления голеностопа’, steps: [‘Сидя на стуле, гиря на бедре’,‘Или стоя в полуприседе’,‘Подъём на носки с согнутыми коленями’,‘Полная амплитуда’,‘15 повторений’], mistakes: [‘Использовать руки для подъёма’,‘Выпрямлять колени — это уже gastrocnemius’] },
+sideLegRaise: { target: ‘Средняя ягодичная, аддукторы, разгибатели бедра — стабильность бёдер на скале’, steps: [‘Утяжелители на щиколотках’,‘Лёжа на боку — махи в сторону вверх (3×12)’,‘Лёжа на спине — махи вперёд (3×12)’,‘На животе или стоя — махи назад (3×12)’,‘Контроль на возврате’], mistakes: [‘Раскачка’,‘Неполная амплитуда’] },
+bigToePress: { target: ‘Сгибатель большого пальца — критично для edging и smearing’, steps: [‘Стопа плоско на полу’,‘Прижми большой палец к полу’,‘Подними остальные пальцы’,‘Удержи 3 сек, расслабь’,‘10 повторений/ногу’], mistakes: [‘Стопа отрывается’,‘Колено разворачивается’] },
+walking: { target: ‘Кардио, активное восстановление, стопы (особенно босиком)’, steps: [‘30+ минут лёгкого темпа’,‘Часть босиком если безопасно — лучшая бесплатная тренировка стопы’,‘Можно с гирей в одной руке (suitcase carry)’], mistakes: [‘Слишком быстро — это не активное восстановление’] },
+suitcase: { target: ‘Антибоковой кор, хват, верх трапеции’, steps: [‘Гиря в одной руке’,‘Корпус прямой, не валится в сторону’,‘Шагай равномерно 30 м’,‘Поменяй руку’], mistakes: [‘Корпус заваливается под груз’,‘Плечо поднимается’] },
+yoga: { target: ‘Подвижность, восстановление’, steps: [‘15 мин любой йога-флоу’,‘Рекомендация: Yoga With Adriene «for climbers», Tom Merrick’,‘Фокус на бёдрах, плечах, грудном отделе’], mistakes: [‘Игнорирование своих ограничений — не пытайся за один день’] },
+massage: { target: ‘Фасция стопы и предплечий’, steps: [‘Мяч (lacrosse, теннисный) или бутылка под стопу’,‘Перекатывай 2 мин/стопу’,‘Найди болевые точки и подержи на них’,‘То же для предплечий — особенно после Дня 4 с гвоздями’], mistakes: [‘Слишком слабое давление’,‘Слишком сильное на свежей травме’] }
+};
+
+const PLAN = {
+warmup: { label: ‘Разогрев’, title: ‘Ежедневный разогрев’, meta: ‘<strong>~8 мин</strong> · перед каждой тренировкой’, sectionLabel: ‘Daily’, items: [
+{ name: ‘Toe spreads’, reps: ‘20 раз’, tip: ‘Растопыривай пальцы максимально, без напряжения в стопе’, svg: ‘toeSpread’ },
+{ name: ‘Short foot’, reps: ‘10/ногу’, tip: ‘Подними свод стопы не сжимая пальцы’, svg: ‘shortFoot’ },
+{ name: ‘Ankle CARs’, reps: ‘5 в каждую сторону/ногу’, tip: ‘Медленные круги, максимальная амплитуда’, svg: ‘ankleCAR’ },
+{ name: ‘Lateral band walks’, reps: ‘2–3×15 шагов в сторону’, tip: ‘Резинка над коленями, корпус не качается’, svg: ‘lateralBand’ },
+{ name: ‘Banded ankle (knee over toe)’, reps: ‘2×(15 пульсов + 30 сек)/ногу’, tip: ‘Резинка низко якорем, колено за носок’, svg: ‘kneeOverToe’ },
+{ name: ‘Shoulder pass-throughs’, reps: ‘1×10’, tip: ‘Резинка широким хватом над головой и за спину’, svg: ‘shoulderPass’ }
+] },
+day1: { label: ‘День 1’, title: ‘Тяга вертикаль + хват’, meta: ‘<strong>~22 мин</strong> основная часть’, sectionLabel: ‘Day 01’, items: [
+{ name: ‘Тяга гири в наклоне’, reps: ‘4×8/сторону’, tip: ‘Спина прямая, локоть к ребру’, svg: ‘kbRow’ },
+{ name: ‘Сгибания на бицепс с гирей’, reps: ‘3×10’, tip: ‘Локти у корпуса, не раскачивайся’, svg: ‘bicepCurl’ },
+{ name: ‘Тяга резинкой сверху’, reps: ‘3×12’, tip: ‘Резинка на высокий якорь, тяни к груди’, svg: ‘bandHighPull’ },
+{ name: ‘Pinch grip device’, reps: ‘3×30 сек’, tip: ‘Большой палец напротив остальных’, svg: ‘pinchGrip’ },
+{ name: ‘Banded finger extension’, reps: ‘3×15’, tip: ‘Антагонист сгибателей пальцев’, svg: ‘fingerExt’ },
+{ name: ‘Hollow body hold’, reps: ‘3×30 сек’, tip: ‘Поясница прижата к полу’, svg: ‘hollowBody’ }
+] },
+day2: { label: ‘День 2’, title: ‘Жим + плечи прехаб’, meta: ‘<strong>~22 мин</strong> основная часть’, sectionLabel: ‘Day 02’, items: [
+{ name: ‘Жим гири с пола’, reps: ‘4×8/сторону’, tip: ‘Локоть под 45° к корпусу’, svg: ‘floorPress’ },
+{ name: ‘Жим гири стоя’, reps: ‘4×8/сторону’, tip: ‘Корпус не выгибай’, svg: ‘kbPress’ },
+{ name: ‘Face pulls с резинкой’, reps: ‘3×15’, tip: ‘Локти высоко, тяни к ушам’, svg: ‘facePull’ },
+{ name: ‘Band pull-aparts’, reps: ‘3×15’, tip: ‘Прямые руки, своди лопатки’, svg: ‘pullApart’ },
+{ name: ‘Внешняя ротация плеча’, reps: ‘3×12/сторону’, tip: ‘Локоть прижат к корпусу’, svg: ‘extRot’ },
+{ name: ‘Отжимания’, reps: ‘3×макс’, tip: ‘Тело прямое, локти не разводи’, svg: ‘pushup’ }
+] },
+day3: { label: ‘День 3’, title: ‘Кор + tibialis’, meta: ‘<strong>~20 мин</strong> основная часть’, sectionLabel: ‘Day 03’, items: [
+{ name: ‘Планка’, reps: ‘3×60 сек’, tip: ‘Без провисания, дыхание ровное’, svg: ‘plank’ },
+{ name: ‘Боковая планка’, reps: ‘3×45 сек/сторону’, tip: ‘Бёдра вверх’, svg: ‘sidePlank’ },
+{ name: ‘V-ups’, reps: ‘3×12’, tip: ‘Поднимай руки и ноги одновременно’, svg: ‘vup’ },
+{ name: ‘Russian twists с гирей’, reps: ‘3×20’, tip: ‘Поворот идёт от корпуса’, svg: ‘russianTwist’ },
+{ name: ‘Bird dog с утяжелителями’, reps: ‘3×10/сторону’, tip: ‘Противоположная рука и нога’, svg: ‘birdDog’ },
+{ name: ‘Tibialis raises у стены’, reps: ‘3×20’, tip: ‘Поднимай носки максимально’, svg: ‘tibialis’ },
+{ name: ‘Toe walks + heel walks’, reps: ‘2×30 сек каждый’, tip: ‘Не касайся серединой стопы’, svg: ‘toeWalk’ }
+] },
+day4: { label: ‘День 4’, title: ‘Тяга горизонталь + хват’, meta: ‘<strong>~25 мин</strong> основная часть’, sectionLabel: ‘Day 04’, items: [
+{ name: ‘KB swings’, reps: ‘5×10’, tip: ‘Сила от бёдер, не от плеч’, svg: ‘kbSwing’ },
+{ name: ‘Тяга гири между ног (pendlay)’, reps: ‘4×6’, tip: ‘Из мёртвой точки на полу’, svg: ‘pendlayRow’ },
+{ name: ‘Renegade rows’, reps: ‘3×8/сторону’, tip: ‘Бёдра не вращаются’, svg: ‘renegade’ },
+{ name: ‘Гнутьё гвоздей’, reps: ‘3–5 попыток’, tip: ‘150 мм (60d), обмотай руки’, svg: ‘nailBend’ },
+{ name: ‘Pinch grip device’, reps: ‘3×макс по времени’, tip: ‘Прогрессия — увеличиваем удержание’, svg: ‘pinchGrip’ },
+{ name: ‘Сгибания запястий с гирей’, reps: ‘3×15’, tip: ‘Только кисть двигается’, svg: ‘wristCurl’ }
+] },
+day5: { label: ‘День 5’, title: ‘Ноги + стопы’, meta: ‘<strong>~25 мин</strong> основная часть’, sectionLabel: ‘Day 05’, items: [
+{ name: ‘Гоблет-присед’, reps: ‘4×8’, tip: ‘Гиря у груди, колени по линии носков’, svg: ‘gobletSquat’ },
+{ name: ‘Болгарские выпады’, reps: ‘3×10/ногу’, tip: ‘Задняя нога на стуле’, svg: ‘bulgarian’ },
+{ name: ‘Single-leg RDL’, reps: ‘3×8/ногу’, tip: ‘Опорная нога слегка согнута’, svg: ‘singleLegRDL’ },
+{ name: ‘Подъёмы на носки одной ногой’, reps: ‘4×12, эксцентрик 3 сек’, tip: ‘Гиря в руке, медленное опускание’, svg: ‘calfRaise’ },
+{ name: ‘Подъёмы с согнутыми коленями (soleus)’, reps: ‘3×15’, tip: ‘Сидя или с согнутыми коленями’, svg: ‘soleusRaise’ },
+{ name: ‘Махи с утяжелителями’, reps: ‘3×12 в каждое направление’, tip: ‘Бок/спина/назад’, svg: ‘sideLegRaise’ },
+{ name: ‘Big toe press’, reps: ‘3×10/ногу’, tip: ‘Большой палец к полу, остальные вверх’, svg: ‘bigToePress’ }
+] },
+day6: { label: ‘День 6’, title: ‘Длинная ходьба + carries’, meta: ‘<strong>~40–60 мин</strong>’, sectionLabel: ‘Day 06’, items: [
+{ name: ‘Прогулка’, reps: ‘30+ мин’, tip: ‘Часть босиком если возможно’, svg: ‘walking’ },
+{ name: ‘Suitcase carry с гирей’, reps: ‘3×30 м/сторону’, tip: ‘Корпус не валится’, svg: ‘suitcase’ }
+] },
+day7: { label: ‘День 7’, title: ‘Йога + восстановление’, meta: ‘<strong>~20 мин</strong>’, sectionLabel: ‘Day 07’, items: [
+{ name: ‘Йога-флоу’, reps: ‘15 мин’, tip: ‘YouTube: Yoga With Adriene, Tom Merrick’, svg: ‘yoga’ },
+{ name: ‘Banded finger extension’, reps: ‘3×20’, tip: ‘Восстановление сухожилий пальцев’, svg: ‘fingerExt’ },
+{ name: ‘Массаж стопы и предплечий’, reps: ‘2 мин/зону’, tip: ‘Мяч/бутылка под стопу’, svg: ‘massage’ }
+] },
+cooldown: { label: ‘Растяжка’, title: ‘Ежедневная растяжка’, meta: ‘<strong>~6 мин</strong> · после каждой тренировки’, sectionLabel: ‘Daily’, items: [
+{ name: ‘Plantar fascia stretch’, reps: ‘30 сек/стопу’, tip: ‘Пальцы упёрты в стену, наклонись’, svg: ‘plantarFascia’ },
+{ name: ‘Икра прямая (gastrocnemius)’, reps: ‘45 сек/ногу’, tip: ‘Выпад, задняя нога прямая’, svg: ‘calfStretch’ },
+{ name: ‘Икра согнутая (soleus)’, reps: ‘45 сек/ногу’, tip: ‘То же, но колено задней ноги согнуто’, svg: ‘soleusStretch’ },
+{ name: ‘Knee-to-wall’, reps: ‘30 сек/ногу’, tip: ‘Колено вперёд за носок’, svg: ‘kneeWall’ },
+{ name: ‘Sleeper stretch’, reps: ‘45 сек/сторону’, tip: ‘Лёжа на боку, мягко дави запястье вниз’, svg: ‘sleeper’ },
+{ name: ‘Полотенце за спиной’, reps: ‘30 сек/сторону + поменять’, tip: ‘Верхняя рука тянет полотенце вверх’, svg: ‘towelBack’ },
+{ name: ‘Doorway pec’, reps: ‘30 сек/сторону × 2 высоты’, tip: ‘Локоть выше, потом ниже плеча’, svg: ‘doorwayPec’ },
+{ name: ‘Lat stretch у стены’, reps: ‘30 сек/сторону’, tip: ‘Рука вверх, бедро к стене’, svg: ‘latStretch’ }
+] }
+};
+
+const ORDER = [‘warmup’,‘day1’,‘day2’,‘day3’,‘day4’,‘day5’,‘day6’,‘day7’,‘cooldown’];
+const CHECK_SVG = ‘<svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>’;
+
+function today() { return new Date().toISOString().slice(0, 10); }
+
+function getDone() {
+try {
+const raw = localStorage.getItem(‘done-’ + today());
+return raw ? JSON.parse(raw) : {};
+} catch(e) { return {}; }
+}
+
+function setDone(d) {
+try { localStorage.setItem(‘done-’ + today(), JSON.stringify(d)); } catch(e) {}
+}
+
+function cleanupOldDone() {
+try {
+const t = today();
+for (let i = 0; i < localStorage.length; i++) {
+const k = localStorage.key(i);
+if (k && k.startsWith(‘done-’) && k !== ‘done-’ + t) {
+const date = k.slice(5);
+const diff = (new Date(t) - new Date(date)) / 86400000;
+if (diff > 7) localStorage.removeItem(k);
+}
+}
+} catch(e) {}
+}
+
+const _dayMap = { 1: ‘day1’, 2: ‘day2’, 3: ‘day3’, 4: ‘day4’, 5: ‘day5’, 6: ‘day6’, 0: ‘day7’ };
+const _autoDay = _dayMap[new Date().getDay()] || ‘day1’;
+let state = { section: _autoDay, view: ‘list’, idx: null };
+
+function exId(section, i) { return section + ‘-’ + i; }
+
+function totalToday() {
+let total = 0;
+for (const k of ORDER) total += PLAN[k].items.length;
+return total;
+}
+
+function renderProgress() {
+const done = getDone();
+const count = Object.values(done).filter(Boolean).length;
+document.getElementById(‘prog’).textContent = count + ‘/’ + totalToday();
+}
+
+function renderTabs() {
+const tabs = document.getElementById(‘tabs’);
+tabs.innerHTML = ORDER.map(k =>
+‘<button class="tab' + (state.section === k ? ' active' : '') + '" data-key="' + k + '">’ + PLAN[k].label + ‘</button>’
+).join(’’);
+}
+
+function renderList() {
+const sec = PLAN[state.section];
+const done = getDone();
+const main = document.getElementById(‘main’);
+main.innerHTML =
+‘<div class="section-head">’ +
+‘<div class="section-label">’ + sec.sectionLabel + ‘</div>’ +
+‘<h2>’ + sec.title + ‘</h2>’ +
+‘<p class="meta">’ + sec.meta + ‘</p>’ +
+‘</div>’ +
+‘<div class="cards">’ + sec.items.map((it, i) => {
+const isDone = done[exId(state.section, i)];
+return ‘<div class="card' + (isDone ? ' done' : '') + '" data-idx="' + i + '">’ +
+‘<div class="anim">’ + (SVG[it.svg] || ‘’) + ‘</div>’ +
+‘<div class="body">’ +
+‘<p class="name">’ + it.name + ‘</p>’ +
+‘<p class="reps mono">’ + it.reps + ‘</p>’ +
+‘<p class="tip">’ + it.tip + ‘</p>’ +
+‘</div>’ +
+(isDone ? CHECK_SVG : ‘<span class="chev">›</span>’) +
+‘</div>’;
+}).join(’’) + ‘</div>’;
+}
+
+function renderDetail() {
+const sec = PLAN[state.section];
+const it = sec.items[state.idx];
+const det = DETAIL[it.svg] || { target: ‘’, steps: [], mistakes: [] };
+const done = getDone();
+const isDone = done[exId(state.section, state.idx)];
+const main = document.getElementById(‘main’);
+main.innerHTML =
+‘<button class="back-btn" id="back">’ + sec.title + ‘</button>’ +
+‘<div class="detail-head">’ +
+‘<div class="anim-big">’ + (SVG[it.svg] || ‘’) + ‘</div>’ +
+‘<div class="detail-info">’ +
+‘<h2>’ + it.name + ‘</h2>’ +
+‘<p class="reps-big mono">’ + it.reps + ‘</p>’ +
+(det.target ? ‘<p class="target"><b>Цель:</b> ’ + det.target + ‘</p>’ : ‘’) +
+‘</div></div>’ +
+(det.steps.length ? ‘<div class="det-section"><h3>Как делать</h3><ol class="steps">’ + det.steps.map(s => ‘<li>’ + s + ‘</li>’).join(’’) + ‘</ol></div>’ : ‘’) +
+(det.mistakes.length ? ‘<div class="det-section"><h3>Типичные ошибки</h3><ul class="mistakes">’ + det.mistakes.map(s => ‘<li>’ + s + ‘</li>’).join(’’) + ‘</ul></div>’ : ‘’) +
+‘<button class="mark-btn' + (isDone ? ' done' : '') + '" id="mark">’ + (isDone ? ‘✓ Выполнено сегодня’ : ‘Отметить выполненным’) + ‘</button>’;
+}
+
+function render() {
+renderTabs();
+renderProgress();
+if (state.view === ‘list’) renderList();
+else renderDetail();
+window.scrollTo(0, 0);
+}
+
+document.getElementById(‘tabs’).addEventListener(‘click’, e => {
+const t = e.target.closest(’.tab’);
+if (t) {
+state.section = t.dataset.key;
+state.view = ‘list’;
+state.idx = null;
+localStorage.setItem(‘last-section’, state.section);
+render();
+}
+});
+
+document.getElementById(‘main’).addEventListener(‘click’, e => {
+if (e.target.closest(’#back’)) {
+state.view = ‘list’;
+state.idx = null;
+render();
+return;
+}
+if (e.target.closest(’#mark’)) {
+const done = getDone();
+const id = exId(state.section, state.idx);
+done[id] = !done[id];
+setDone(done);
+render();
+return;
+}
+const card = e.target.closest(’.card’);
+if (card) {
+state.idx = parseInt(card.dataset.idx);
+state.view = ‘detail’;
+render();
+}
+});
+
+cleanupOldDone();
+render();
+</script>
+
+</body>
+</html>
